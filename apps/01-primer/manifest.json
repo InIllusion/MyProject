@@ -1,0 +1,9 @@
+{
+  "name": "Шагомер",
+  "short_name": "Шагомер",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#1B1140",
+  "theme_color": "#6D28D9",
+  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png" }]
+}
