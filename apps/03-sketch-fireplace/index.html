@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<meta name="theme-color" content="#1a0a00">
+<title>Скетч-бук у камина</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --warm1: #1a0a00;
+    --warm2: #2d1508;
+    --warm3: #4a2010;
+    --amber: #f59e0b;
+    --orange: #ea580c;
+    --cream: #fef3c7;
+    --glass: rgba(30, 15, 5, 0.75);
+    --glass-light: rgba(50, 25, 10, 0.6);
+  }
+
+  html, body {
+    height: 100%; width: 100%;
+    overflow: hidden;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--warm1);
+    color: var(--cream);
+    touch-action: none;
+  }
+
+  /* ===== FIREPLACE BACKGROUND ===== */
+  .bg-scene {
+    position: fixed; inset: 0; z-index: 0;
+    background: linear-gradient(180deg, #0d0503 0%, #1a0a02 30%, #2d1508 60%, #3d1a0a 100%);
+    overflow: hidden;
+  }
+
+  .bg-scene::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 120%; height: 60%;
+    background: radial-gradient(ellipse at 50% 100%, rgba(234,88,12,0.25) 0%, rgba(245,158,11,0.1) 30%, transparent 70%);
+    animation: glowPulse 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes glowPulse {
+    0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+  }
+
+  .fireplace {
+    position: absolute;
+    bottom: 5%; left: 50%; transform: translateX(-50%);
+    width: 280px; height: 220px;
+  }
+
+  .fireplace-frame {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 240px; height: 180px;
+    border: 12px solid #3d2010;
+    border-bottom: none;
+    border-radius: 120px 120px 0 0;
+    background: #0a0402;
+    box-shadow: inset 0 0 40px rgba(234,88,12,0.3), 0 0 60px rgba(234,88,12,0.15);
+  }
+
+  .fireplace-mantle {
+    position: absolute; bottom: 170px; left: 50%; transform: translateX(-50%);
+    width: 280px; height: 16px;
+    background: linear-gradient(180deg, #5a3520, #3d2010);
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  }
+
+  .flames {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    width: 160px; height: 120px;
+  }
+
+  .flame {
+    position: absolute; bottom: 0;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: flicker infinite ease-in-out alternate;
+  }
+
+  .flame:nth-child(1) {
+    left: 50%; transform: translateX(-50%);
+    width: 50px; height: 90px;
+    background: linear-gradient(0deg, #ea580c 0%, #f59e0b 40%, #fbbf24 70%, #fef3c7 100%);
+    animation-duration: 0.4s;
+    opacity: 0.9;
+  }
+  .flame:nth-child(2) {
+    left: 30%; transform: translateX(-50%);
+    width: 35px; height: 70px;
+    background: linear-gradient(0deg, #dc2626 0%, #ea580c 40%, #f59e0b 80%, #fbbf24 100%);
+    animation-duration: 0.5s; animation-delay: 0.1s;
+    opacity: 0.8;
+  }
+  .flame:nth-child(3) {
+    left: 70%; transform: translateX(-50%);
+    width: 38px; height: 75px;
+    background: linear-gradient(0deg, #dc2626 0%, #ea580c 40%, #f59e0b 80%, #fbbf24 100%);
+    animation-duration: 0.45s; animation-delay: 0.2s;
+    opacity: 0.85;
+  }
+  .flame:nth-child(4) {
+    left: 20%; transform: translateX(-50%);
+    width: 25px; height: 50px;
+    background: linear-gradient(0deg, #b91c1c 0%, #dc2626 50%, #ea580c 100%);
+    animation-duration: 0.6s; animation-delay: 0.15s;
+    opacity: 0.7;
+  }
+  .flame:nth-child(5) {
+    left: 80%; transform: translateX(-50%);
+    width: 22px; height: 45px;
+    background: linear-gradient(0deg, #b91c1c 0%, #dc2626 50%, #ea580c 100%);
+    animation-duration: 0.55s; animation-delay: 0.25s;
+    opacity: 0.65;
+  }
+
+  @keyframes flicker {
+    0% { transform: translateX(-50%) scaleX(1) scaleY(1) rotate(-1deg); }
+    25% { transform: translateX(-50%) scaleX(0.9) scaleY(1.05) rotate(1deg); }
+    50% { transform: translateX(-50%) scaleX(1.05) scaleY(0.95) rotate(-0.5deg); }
+    75% { transform: translateX(-50%) scaleX(0.95) scaleY(1.02) rotate(0.5deg); }
+    100% { transform: translateX(-50%) scaleX(1.02) scaleY(0.98) rotate(-1deg); }
+  }
+
+  .ember {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: #fbbf24;
+    border-radius: 50%;
+    animation: rise linear infinite;
+    box-shadow: 0 0 4px #f59e0b, 0 0 8px rgba(245,158,11,0.5);
+  }
+
+  @keyframes rise {
+    0% { opacity: 1; transform: translateY(0) translateX(0); }
+    100% { opacity: 0; transform: translateY(-200px) translateX(var(--drift)); }
+  }
+
+  .logs {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 140px; height: 30px;
+  }
+  .log {
+    position: absolute; bottom: 0;
+    height: 18px; border-radius: 9px;
+    background: linear-gradient(180deg, #5a3520 0%, #3d2010 50%, #2d1508 100%);
+    box-shadow: 0 0 10px rgba(234,88,12,0.3);
+  }
+  .log:nth-child(1) { width: 120px; left: 10px; transform: rotate(-5deg); }
+  .log:nth-child(2) { width: 100px; left: 30px; bottom: 10px; transform: rotate(8deg); }
+
+  .particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: rgba(251,191,36,0.3);
+    border-radius: 50%;
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    20% { opacity: 0.6; }
+    80% { opacity: 0.3; }
+    100% { transform: translateY(-100vh) translateX(var(--drift)); opacity: 0; }
+  }
+
+  /* ===== APP LAYOUT ===== */
+  .app {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    height: 100dvh; width: 100%;
+    max-width: 480px; margin: 0 auto;
+  }
+
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(245,158,11,0.15);
+    flex-shrink: 0;
+  }
+  .header h1 {
+    font-size: 16px; font-weight: 600;
+    background: linear-gradient(135deg, #fbbf24, #ea580c);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-actions { display: flex; gap: 8px; }
+  .header-btn {
+    width: 36px; height: 36px;
+    border: none; border-radius: 10px;
+    background: rgba(245,158,11,0.15);
+    color: var(--amber);
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .header-btn:active { transform: scale(0.9); background: rgba(245,158,11,0.3); }
+
+  .tab-bar {
+    display: flex;
+    padding: 8px 16px; gap: 6px;
+    background: rgba(20,10,3,0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    flex-shrink: 0;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: rgba(245,158,11,0.08);
+    color: rgba(254,243,199,0.5);
+    font-size: 12px; font-weight: 600;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .tab-btn.active {
+    background: rgba(245,158,11,0.2);
+    border-color: rgba(245,158,11,0.3);
+    color: var(--amber);
+    box-shadow: 0 0 20px rgba(245,158,11,0.1);
+  }
+  .tab-btn span.icon { font-size: 16px; }
+
+  .content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+  }
+  .panel.active { display: flex; }
+
+  /* ===== SKETCH PANEL ===== */
+  .sketch-toolbar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    background: var(--glass-light);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .tool-group {
+    display: flex; align-items: center; gap: 4px;
+  }
+  .tool-btn {
+    width: 36px; height: 36px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: rgba(245,158,11,0.1);
+    color: var(--cream);
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tool-btn.active { border-color: var(--amber); background: rgba(245,158,11,0.25); }
+  .tool-btn:active { transform: scale(0.9); }
+
+  .color-dot {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .color-dot.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+
+  .size-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 80px; height: 4px;
+    background: rgba(245,158,11,0.3);
+    border-radius: 2px;
+    outline: none;
+  }
+  .size-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--amber);
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(245,158,11,0.5);
+  }
+
+  .canvas-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: rgba(255,248,230,0.03);
+  }
+  #sketchCanvas {
+    width: 100%; height: 100%;
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  /* ===== NOTES PANEL ===== */
+  .notes-panel { padding: 16px; gap: 12px; }
+  .notes-header {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .notes-header h2 { font-size: 18px; color: var(--amber); }
+  .add-note-btn {
+    padding: 8px 16px;
+    border: none; border-radius: 10px;
+    background: linear-gradient(135deg, var(--amber), var(--orange));
+    color: white;
+    font-size: 13px; font-weight: 600;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .add-note-btn:active { transform: scale(0.95); }
+
+  .notes-list {
+    flex: 1; overflow-y: auto;
+    touch-action: pan-y; -webkit-overflow-scrolling: touch;
+    display: flex; flex-direction: column; gap: 10px;
+    padding-bottom: 20px;
+  }
+  .notes-list::-webkit-scrollbar { width: 4px; }
+  .notes-list::-webkit-scrollbar-thumb { background: rgba(245,158,11,0.3); border-radius: 2px; }
+
+  .note-card {
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(245,158,11,0.12);
+    border-radius: 14px;
+    padding: 14px;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .note-card textarea {
+    width: 100%; min-height: 60px;
+    background: transparent;
+    border: none; outline: none;
+    color: var(--cream);
+    font-size: 14px; line-height: 1.5;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    resize: vertical;
+  }
+  .note-card textarea::placeholder { color: rgba(254,243,199,0.3); }
+  .note-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid rgba(245,158,11,0.08);
+  }
+  .note-date { font-size: 11px; color: rgba(254,243,199,0.4); }
+  .note-delete {
+    background: none; border: none;
+    color: rgba(239,68,68,0.6);
+    font-size: 13px; cursor: pointer;
+    padding: 4px 8px; border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .note-delete:active { background: rgba(239,68,68,0.2); }
+
+  /* ===== CALCULATOR PANEL ===== */
+  .calc-panel {
+    padding: 16px;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+  .calc-display {
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(245,158,11,0.15);
+    border-radius: 18px;
+    padding: 20px;
+    text-align: right;
+    min-height: 100px;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+  }
+  .calc-expression {
+    font-size: 14px;
+    color: rgba(254,243,199,0.4);
+    min-height: 20px;
+    word-break: break-all;
+  }
+  .calc-result {
+    font-size: 36px; font-weight: 600;
+    color: var(--cream);
+    word-break: break-all;
+    transition: all 0.2s;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .calc-btn {
+    padding: 18px 8px;
+    border: none;
+    border-radius: 14px;
+    font-size: 20px; font-weight: 600;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--cream);
+    border: 1px solid rgba(245,158,11,0.08);
+  }
+  .calc-btn:active { transform: scale(0.93); }
+  .calc-btn.op {
+    background: rgba(245,158,11,0.2);
+    color: var(--amber);
+    border-color: rgba(245,158,11,0.2);
+  }
+  .calc-btn.fn {
+    background: rgba(245,158,11,0.1);
+    color: rgba(254,243,199,0.7);
+    font-size: 16px;
+  }
+  .calc-btn.equals {
+    background: linear-gradient(135deg, var(--amber), var(--orange));
+    color: white;
+    border: none;
+  }
+  .calc-btn.zero { grid-column: span 2; }
+
+  .empty-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; gap: 12px;
+    color: rgba(254,243,199,0.3);
+  }
+  .empty-state .icon { font-size: 48px; }
+
+  #toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(16px);
+    background: rgba(254,243,199,0.95); color: #2d1508;
+    padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    opacity: 0; pointer-events: none; transition: 0.25s; z-index: 50; max-width: 90vw;
+  }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .empty-state p { font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- Background scene -->
+<div class="bg-scene">
+  <div class="fireplace">
+    <div class="fireplace-mantle"></div>
+    <div class="fireplace-frame">
+      <div class="flames">
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+      </div>
+      <div class="logs">
+        <div class="log"></div>
+        <div class="log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- App -->
+<div class="app">
+  <div class="header">
+    <h1>🔥 Скетч-бук у камина</h1>
+    <div class="header-actions">
+      <button class="header-btn" id="btnSave" title="Сохранить">💾</button>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="sketch">
+      <span class="icon">✏️</span> Скетч
+    </button>
+    <button class="tab-btn" data-tab="notes">
+      <span class="icon">📝</span> Заметки
+    </button>
+    <button class="tab-btn" data-tab="calc">
+      <span class="icon">🧮</span> Калькулятор
+    </button>
+  </div>
+
+  <div class="content">
+    <!-- SKETCH -->
+    <div class="panel active" id="panelSketch">
+      <div class="sketch-toolbar">
+        <div class="tool-group">
+          <button class="tool-btn active" data-tool="pen" title="Карандаш">✏️</button>
+          <button class="tool-btn" data-tool="eraser" title="Ластик">🧹</button>
+        </div>
+        <div class="tool-group" id="colorPalette">
+          <div class="color-dot active" data-color="#fef3c7" style="background:#fef3c7"></div>
+          <div class="color-dot" data-color="#f59e0b" style="background:#f59e0b"></div>
+          <div class="color-dot" data-color="#ea580c" style="background:#ea580c"></div>
+          <div class="color-dot" data-color="#ef4444" style="background:#ef4444"></div>
+          <div class="color-dot" data-color="#8b5cf6" style="background:#8b5cf6"></div>
+          <div class="color-dot" data-color="#3b82f6" style="background:#3b82f6"></div>
+          <div class="color-dot" data-color="#10b981" style="background:#10b981"></div>
+          <div class="color-dot" data-color="#1a1a1a" style="background:#1a1a1a;border:1px solid rgba(255,255,255,0.2)"></div>
+        </div>
+        <input type="range" class="size-slider" id="sizeSlider" min="1" max="20" value="3">
+        <button class="tool-btn" id="btnClear" title="Очистить">🗑️</button>
+        <button class="tool-btn" id="btnUndo" title="Отменить">↩️</button>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="sketchCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="panel notes-panel" id="panelNotes">
+      <div class="notes-header">
+        <h2>📝 Заметки</h2>
+        <button class="add-note-btn" id="btnAddNote">+ Новая</button>
+      </div>
+      <div class="notes-list" id="notesList"></div>
+    </div>
+
+    <!-- CALCULATOR -->
+    <div class="panel calc-panel" id="panelCalc">
+      <div class="calc-display">
+        <div class="calc-expression" id="calcExpr"></div>
+        <div class="calc-result" id="calcResult">0</div>
+      </div>
+      <div class="calc-grid" id="calcGrid">
+        <button class="calc-btn fn" data-action="clear">C</button>
+        <button class="calc-btn fn" data-action="backspace">⌫</button>
+        <button class="calc-btn fn" data-action="percent">%</button>
+        <button class="calc-btn op" data-action="operator" data-value="÷">÷</button>
+
+        <button class="calc-btn" data-action="number" data-value="7">7</button>
+        <button class="calc-btn" data-action="number" data-value="8">8</button>
+        <button class="calc-btn" data-action="number" data-value="9">9</button>
+        <button class="calc-btn op" data-action="operator" data-value="×">×</button>
+
+        <button class="calc-btn" data-action="number" data-value="4">4</button>
+        <button class="calc-btn" data-action="number" data-value="5">5</button>
+        <button class="calc-btn" data-action="number" data-value="6">6</button>
+        <button class="calc-btn op" data-action="operator" data-value="−">−</button>
+
+        <button class="calc-btn" data-action="number" data-value="1">1</button>
+        <button class="calc-btn" data-action="number" data-value="2">2</button>
+        <button class="calc-btn" data-action="number" data-value="3">3</button>
+        <button class="calc-btn op" data-action="operator" data-value="+">+</button>
+
+        <button class="calc-btn fn" data-action="negate">±</button>
+        <button class="calc-btn" data-action="number" data-value="0">0</button>
+        <button class="calc-btn" data-action="decimal">.</button>
+        <button class="calc-btn equals" data-action="equals">=</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== BACKGROUND PARTICLES =====
+(function initBg() {
+  const scene = document.querySelector('.bg-scene');
+  for (let i = 0; i < 12; i++) {
+    const e = document.createElement('div');
+    e.className = 'ember';
+    e.style.left = (35 + Math.random() * 30) + '%';
+    e.style.bottom = (10 + Math.random() * 15) + '%';
+    e.style.animationDuration = (2 + Math.random() * 3) + 's';
+    e.style.animationDelay = (Math.random() * 4) + 's';
+    e.style.setProperty('--drift', (Math.random() * 60 - 30) + 'px');
+    scene.appendChild(e);
+  }
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.bottom = '-5%';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+    scene.appendChild(p);
+  }
+})();
+
+// ===== TABS =====
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const tabName = btn.dataset.tab;
+    const panelId = 'panel' + tabName.charAt(0).toUpperCase() + tabName.slice(1);
+    document.getElementById(panelId).classList.add('active');
+    // Холст считает свой размер только когда панель видима
+    if (tabName === 'sketch') setTimeout(resizeCanvas, 0);
+  });
+});
+
+// ===== SKETCH =====
+const canvas = document.getElementById('sketchCanvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+let currentColor = '#fef3c7';
+let currentSize = 3;
+let currentTool = 'pen';
+let history = [];
+let maxHistory = 20;
+
+function resizeCanvas() {
+  const wrap = canvas.parentElement;
+  const dpr = window.devicePixelRatio || 1;
+  const w = wrap.clientWidth;
+  const h = wrap.clientHeight;
+  // Панель может быть скрыта, тогда ширина равна нулю.
+  // Если не выйти здесь, холст схлопнется и рисовать станет негде.
+  if (w === 0 || h === 0) return;
+  if (canvas.width === 0 || canvas.height === 0) { initCanvas(); return; }
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function saveState() {
+  if (history.length >= maxHistory) history.shift();
+  history.push(canvas.toDataURL());
+}
+
+function initCanvas() {
+  const wrap = canvas.parentElement;
+  const dpr = window.devicePixelRatio || 1;
+  if (wrap.clientWidth === 0 || wrap.clientHeight === 0) return;
+  canvas.width = wrap.clientWidth * dpr;
+  canvas.height = wrap.clientHeight * dpr;
+  canvas.style.width = wrap.clientWidth + 'px';
+  canvas.style.height = wrap.clientHeight + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  saveState();
+}
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches ? e.touches[0] : e;
+  return {
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top
+  };
+}
+
+function startDraw(e) {
+  e.preventDefault();
+  drawing = true;
+  const pos = getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+  ctx.lineTo(pos.x + 0.1, pos.y + 0.1);
+  applyStyle();
+  ctx.stroke();
+}
+
+function draw(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  const pos = getPos(e);
+  applyStyle();
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+}
+
+function endDraw(e) {
+  if (!drawing) return;
+  drawing = false;
+  ctx.beginPath();
+  saveState();
+}
+
+function applyStyle() {
+  if (currentTool === 'eraser') {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.strokeStyle = 'rgba(0,0,0,1)';
+    ctx.lineWidth = currentSize * 4;
+  } else {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = currentSize;
+  }
+}
+
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', endDraw);
+canvas.addEventListener('mouseleave', endDraw);
+canvas.addEventListener('touchstart', startDraw, { passive: false });
+canvas.addEventListener('touchmove', draw, { passive: false });
+canvas.addEventListener('touchend', endDraw);
+
+document.querySelectorAll('[data-tool]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-tool]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTool = btn.dataset.tool;
+  });
+});
+
+document.querySelectorAll('.color-dot').forEach(dot => {
+  dot.addEventListener('click', () => {
+    document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+    currentColor = dot.dataset.color;
+  });
+});
+
+document.getElementById('sizeSlider').addEventListener('input', e => {
+  currentSize = parseInt(e.target.value);
+});
+
+document.getElementById('btnClear').addEventListener('click', () => {
+  if (confirm('Очистить весь скетч?')) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    saveState();
+  }
+});
+
+document.getElementById('btnUndo').addEventListener('click', () => {
+  if (history.length > 1) {
+    history.pop();
+    const prev = history[history.length - 1];
+    const img = new Image();
+    img.onload = () => {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+      ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
+    };
+    img.src = prev;
+  }
+});
+
+let toastT = 0;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('on'), 1800);
+}
+
+document.getElementById('btnSave').addEventListener('click', () => {
+  const activePanel = document.querySelector('.panel.active');
+  if (activePanel.id === 'panelSketch') {
+    const link = document.createElement('a');
+    link.download = 'sketch-' + Date.now() + '.png';
+    link.href = canvas.toDataURL();
+    link.click();
+    toast('Рисунок сохранён');
+  } else if (activePanel.id === 'panelNotes') {
+    toast('Заметки сохраняются сами');
+  } else {
+    toast('Сохранять нечего: это калькулятор');
+  }
+});
+
+window.addEventListener('resize', resizeCanvas);
+setTimeout(initCanvas, 100);
+
+// ===== NOTES =====
+let notes = JSON.parse(localStorage.getItem('fireside-notes') || '[]');
+
+function escapeHtml(t) {
+  return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderNotes() {
+  const list = document.getElementById('notesList');
+  if (notes.length === 0) {
+    list.innerHTML = '<div class="empty-state"><span class="icon">📝</span><p>Нажмите «+ Новая» чтобы создать заметку</p></div>';
+    return;
+  }
+  list.innerHTML = notes.map((n, i) => `
+    <div class="note-card" data-idx="${i}">
+      <textarea placeholder="Пишите здесь..." data-idx="${i}">${escapeHtml(n.text)}</textarea>
+      <div class="note-meta">
+        <span class="note-date">${n.date}</span>
+        <button class="note-delete" data-idx="${i}">Удалить</button>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('input', e => {
+      const idx = parseInt(e.target.dataset.idx);
+      notes[idx].text = e.target.value;
+      saveNotes();
+    });
+  });
+  
+  list.querySelectorAll('.note-delete').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const idx = parseInt(e.target.dataset.idx);
+      notes.splice(idx, 1);
+      saveNotes();
+      renderNotes();
+    });
+  });
+}
+
+function saveNotes() {
+  localStorage.setItem('fireside-notes', JSON.stringify(notes));
+}
+
+document.getElementById('btnAddNote').addEventListener('click', () => {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ru-RU', {
+    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+  });
+  notes.unshift({ text: '', date: dateStr });
+  saveNotes();
+  renderNotes();
+  setTimeout(() => {
+    const first = document.querySelector('.note-card textarea');
+    if (first) first.focus();
+  }, 100);
+});
+
+renderNotes();
+
+// ===== CALCULATOR =====
+let calcCurrent = '0';
+let calcPrevious = '';
+let calcOperator = null;
+let calcWaitingForOperand = false;
+
+const calcExprEl = document.getElementById('calcExpr');
+const calcResultEl = document.getElementById('calcResult');
+
+function updateCalcDisplay() {
+  calcResultEl.textContent = calcCurrent;
+  if (calcOperator && calcPrevious !== '') {
+    calcExprEl.textContent = calcPrevious + ' ' + calcOperator;
+  } else {
+    calcExprEl.textContent = '';
+  }
+}
+
+function inputNumber(digit) {
+  if (calcWaitingForOperand) {
+    calcCurrent = digit;
+    calcWaitingForOperand = false;
+  } else {
+    calcCurrent = calcCurrent === '0' ? digit : calcCurrent + digit;
+  }
+  updateCalcDisplay();
+}
+
+function inputDecimal() {
+  if (calcWaitingForOperand) {
+    calcCurrent = '0.';
+    calcWaitingForOperand = false;
+  } else if (!calcCurrent.includes('.')) {
+    calcCurrent += '.';
+  }
+  updateCalcDisplay();
+}
+
+function handleOperator(nextOperator) {
+  const inputValue = parseFloat(calcCurrent);
+  
+  if (calcOperator && calcWaitingForOperand) {
+    calcOperator = nextOperator;
+    calcExprEl.textContent = calcPrevious + ' ' + calcOperator;
+    return;
+  }
+  
+  if (calcPrevious === '') {
+    calcPrevious = inputValue;
+  } else if (calcOperator) {
+    const result = performOperation(calcOperator, calcPrevious, inputValue);
+    calcCurrent = String(result);
+    calcPrevious = result;
+  }
+  
+  calcWaitingForOperand = true;
+  calcOperator = nextOperator;
+  updateCalcDisplay();
+}
+
+function performOperation(operator, a, b) {
+  switch (operator) {
+    case '+': return a + b;
+    case '−': return a - b;
+    case '×': return a * b;
+    case '÷': return b !== 0 ? a / b : 0;
+    default: return b;
+  }
+}
+
+function handleEquals() {
+  const inputValue = parseFloat(calcCurrent);
+  
+  if (calcOperator && calcPrevious !== '') {
+    const result = performOperation(calcOperator, calcPrevious, inputValue);
+    calcExprEl.textContent = calcPrevious + ' ' + calcOperator + ' ' + inputValue + ' =';
+    calcCurrent = String(Math.round(result * 1e10) / 1e10);
+    calcPrevious = '';
+    calcOperator = null;
+    calcWaitingForOperand = true;
+    updateCalcDisplay();
+  }
+}
+
+function clearCalculator() {
+  calcCurrent = '0';
+  calcPrevious = '';
+  calcOperator = null;
+  calcWaitingForOperand = false;
+  updateCalcDisplay();
+}
+
+function backspace() {
+  if (calcCurrent.length > 1) {
+    calcCurrent = calcCurrent.slice(0, -1);
+  } else {
+    calcCurrent = '0';
+  }
+  updateCalcDisplay();
+}
+
+function handlePercent() {
+  const value = parseFloat(calcCurrent);
+  calcCurrent = String(value / 100);
+  updateCalcDisplay();
+}
+
+function handleNegate() {
+  if (calcCurrent !== '0') {
+    calcCurrent = calcCurrent.startsWith('-')
+      ? calcCurrent.slice(1)
+      : '-' + calcCurrent;
+    updateCalcDisplay();
+  }
+}
+
+// Calculator event delegation
+document.getElementById('calcGrid').addEventListener('click', (e) => {
+  const btn = e.target.closest('.calc-btn');
+  if (!btn) return;
+  
+  const action = btn.dataset.action;
+  const value = btn.dataset.value;
+  
+  switch (action) {
+    case 'number':
+      inputNumber(value);
+      break;
+    case 'decimal':
+      inputDecimal();
+      break;
+    case 'operator':
+      handleOperator(value);
+      break;
+    case 'equals':
+      handleEquals();
+      break;
+    case 'clear':
+      clearCalculator();
+      break;
+    case 'backspace':
+      backspace();
+      break;
+    case 'percent':
+      handlePercent();
+      break;
+    case 'negate':
+      handleNegate();
+      break;
+  }
+});
+
+// ===== SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "Скетч-бук у камина",
+  "short_name": "Скетч-бук",
+  "description": "Блокнот с рисованием, заметками и калькулятором",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a0a00",
+  "theme_color": "#1a0a00",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
