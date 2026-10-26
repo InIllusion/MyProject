@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Шагомер</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .steps-display {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .steps-display.animate {
+            animation: pulse 0.3s ease-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .steps-count {
+            font-size: 72px;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .steps-label {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        canvas {
+            width: 100%;
+            height: 200px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1 1 140px;
+            padding: 18px 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            min-height: 56px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: default;
+            transform: none;
+        }
+
+        .settings {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .setting-item {
+            margin-bottom: 15px;
+        }
+
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .setting-input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+        }
+
+        .setting-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .milestone {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(76, 175, 80, 0.95);
+            padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: milestoneAnim 1.5s ease-out forwards;
+        }
+
+        @keyframes milestoneAnim {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚶 Шагомер</h1>
+        </div>
+
+        <div class="steps-display" id="stepsDisplay">
+            <div class="steps-label">Шаги</div>
+            <div class="steps-count" id="stepsCount">0</div>
+            <div class="steps-label">сегодня</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="distanceValue">0</div>
+                <div class="stat-label">метров</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="caloriesValue">0</div>
+                <div class="stat-label">калорий</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Активность за день</div>
+            <canvas id="activityChart"></canvas>
+        </div>
+
+        <div class="settings">
+            <div class="setting-item">
+                <label class="setting-label" for="stepLength">Длина шага (см)</label>
+                <input type="number" class="setting-input" id="stepLength" placeholder="75" value="75">
+            </div>
+            <div class="setting-item">
+                <label class="setting-label" for="weight">Вес (кг)</label>
+                <input type="number" class="setting-input" id="weight" placeholder="70" value="70">
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="startBtn">Начать считать</button>
+            <button class="btn btn-secondary" id="resetBtn">Начать заново</button>
+        </div>
+
+        <div class="status" id="status">Нажми «Начать считать», положи телефон в карман и иди.</div>
+    </div>
+
+    <script>
+        let steps = 0;
+        let lastMilestone = 0;
+        let lastMotion = null;
+        let lastStepTime = 0;
+        let isTracking = false;
+        let activityData = [];
+        let stepLength = 75;
+        let weight = 70;
+
+        // Сколько миллисекунд не считать новый шаг после предыдущего.
+        // Без этого один шаг засчитывается по десять раз подряд.
+        const STEP_COOLDOWN = 280;
+
+        const stepsCountEl = document.getElementById('stepsCount');
+        const stepsDisplayEl = document.getElementById('stepsDisplay');
+        const distanceValueEl = document.getElementById('distanceValue');
+        const caloriesValueEl = document.getElementById('caloriesValue');
+        const statusEl = document.getElementById('status');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const stepLengthInput = document.getElementById('stepLength');
+        const weightInput = document.getElementById('weight');
+        const canvas = document.getElementById('activityChart');
+        const ctx = canvas.getContext('2d');
+
+        function today() {
+            return new Date().toDateString();
+        }
+
+        // Загрузка данных из localStorage
+        function loadData() {
+            const saved = localStorage.getItem('stepCounter');
+            if (!saved) return;
+
+            const data = JSON.parse(saved);
+
+            stepLength = data.stepLength || 75;
+            weight = data.weight || 70;
+            stepLengthInput.value = stepLength;
+            weightInput.value = weight;
+
+            // Счётчик называется «сегодня», значит на новый день он обнуляется
+            if (data.date && data.date !== today()) {
+                steps = 0;
+                lastMilestone = 0;
+                activityData = [];
+                saveData();
+            } else {
+                steps = data.steps || 0;
+                lastMilestone = data.lastMilestone || 0;
+                activityData = data.activityData || [];
+            }
+
+            updateDisplay();
+            drawChart();
+        }
+
+        // Сохранение данных в localStorage
+        function saveData() {
+            const data = {
+                steps,
+                lastMilestone,
+                activityData,
+                stepLength,
+                weight,
+                date: today(),
+                lastUpdate: new Date().toISOString()
+            };
+            localStorage.setItem('stepCounter', JSON.stringify(data));
+        }
+
+        // Обновление отображения
+        function updateDisplay() {
+            stepsCountEl.textContent = steps;
+
+            const distance = Math.round((steps * stepLength) / 100);
+            distanceValueEl.textContent = distance;
+
+            const calories = Math.round((steps * 0.04) * (weight / 70));
+            caloriesValueEl.textContent = calories;
+        }
+
+        // Обнаружение шагов
+        function handleMotion(event) {
+            if (!isTracking) return;
+
+            const acceleration = event.accelerationIncludingGravity;
+            if (!acceleration) return;
+
+            const magnitude = Math.sqrt(
+                Math.pow(acceleration.x || 0, 2) +
+                Math.pow(acceleration.y || 0, 2) +
+                Math.pow(acceleration.z || 0, 2)
+            );
+
+            if (lastMotion !== null) {
+                const delta = Math.abs(magnitude - lastMotion);
+
+                if (delta > 2.5) {
+                    const now = Date.now();
+                    if (now - lastStepTime > STEP_COOLDOWN) {
+                        lastStepTime = now;
+                        registerStep();
+                    }
+                }
+            }
+
+            lastMotion = magnitude;
+        }
+
+        // Регистрация шага
+        function registerStep() {
+            steps++;
+
+            // Анимация
+            stepsDisplayEl.classList.add('animate');
+            setTimeout(() => stepsDisplayEl.classList.remove('animate'), 300);
+
+            // Проверка на порог 100 шагов
+            if (steps > 0 && steps % 100 === 0 && steps !== lastMilestone) {
+                lastMilestone = steps;
+                triggerMilestone();
+            }
+
+            // Обновление данных активности
+            const hour = new Date().getHours();
+            const existingHour = activityData.find(d => d.hour === hour);
+
+            if (existingHour) {
+                existingHour.steps++;
+            } else {
+                activityData.push({ hour, steps: 1 });
+            }
+
+            updateDisplay();
+            saveData();
+            drawChart();
+        }
+
+        // Срабатывание при достижении порога
+        function triggerMilestone() {
+            // Вибрация (на iPhone её не будет, это нормально)
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200, 100, 200]);
+            }
+
+            // Визуальное уведомление
+            const milestone = document.createElement('div');
+            milestone.className = 'milestone';
+            milestone.textContent = `🎉 ${steps} шагов!`;
+            document.body.appendChild(milestone);
+
+            setTimeout(() => milestone.remove(), 1500);
+        }
+
+        // Отрисовка графика
+        function drawChart() {
+            const width = canvas.width = canvas.offsetWidth * 2;
+            const height = canvas.height = 400;
+
+            ctx.clearRect(0, 0, width, height);
+
+            if (activityData.length === 0) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.font = '20px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Пока пусто. Начни считать шаги!', width / 2, height / 2);
+                return;
+            }
+
+            activityData.sort((a, b) => a.hour - b.hour);
+
+            const maxSteps = Math.max(...activityData.map(d => d.steps));
+            const barWidth = (width - 80) / 24;
+            const maxHeight = height - 80;
+
+            // Рисуем бары, каждый на своём часе суток
+            activityData.forEach(data => {
+                const barHeight = (data.steps / maxSteps) * maxHeight;
+                const x = 40 + data.hour * barWidth;
+                const y = height - 40 - barHeight;
+
+                // Градиент для бара
+                const gradient = ctx.createLinearGradient(x, y, x, height - 40);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0.4)');
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x + 2, y, barWidth - 4, barHeight);
+
+                // Часы, подписываем через один, иначе надписи налезают друг на друга
+                if (data.hour % 2 === 0) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.font = '16px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${data.hour}:00`, x + barWidth / 2, height - 20);
+                }
+            });
+        }
+
+        // Запуск отслеживания. Обязательно по нажатию кнопки:
+        // на Айфоне разрешение на датчики иначе просто не спросят.
+        function startTracking() {
+            if (typeof DeviceMotionEvent === 'undefined') {
+                statusEl.textContent = 'Датчики движения не поддерживаются. Открой приложение на телефоне.';
+                return;
+            }
+
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                    .then(permission => {
+                        if (permission === 'granted') {
+                            enableTracking();
+                        } else {
+                            statusEl.textContent = 'Доступ к датчикам отклонён. Без него шаги считать не получится.';
+                        }
+                    })
+                    .catch(() => {
+                        statusEl.textContent = 'Не удалось спросить разрешение. Попробуй ещё раз.';
+                    });
+            } else {
+                enableTracking();
+            }
+        }
+
+        function enableTracking() {
+            window.addEventListener('devicemotion', handleMotion);
+            isTracking = true;
+            startBtn.textContent = 'Считаю шаги';
+            startBtn.disabled = true;
+            statusEl.textContent = 'Отслеживание активно. Положи телефон в карман и иди.';
+        }
+
+        startBtn.addEventListener('click', startTracking);
+
+        // Сброс счетчика
+        resetBtn.addEventListener('click', () => {
+            if (confirm('Начать заново? Все данные будут сброшены.')) {
+                steps = 0;
+                lastMilestone = 0;
+                activityData = [];
+                updateDisplay();
+                saveData();
+                drawChart();
+            }
+        });
+
+        // Сохранение настроек
+        stepLengthInput.addEventListener('change', () => {
+            stepLength = parseInt(stepLengthInput.value) || 75;
+            updateDisplay();
+            saveData();
+        });
+
+        weightInput.addEventListener('change', () => {
+            weight = parseInt(weightInput.value) || 70;
+            updateDisplay();
+            saveData();
+        });
+
+        // Инициализация
+        loadData();
+        updateDisplay();
+        drawChart();
+
+        // Регистрация Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('Service Worker зарегистрирован'))
+                .catch(err => console.log('Ошибка регистрации Service Worker:', err));
+        }
+    </script>
+</body>
+</html>
